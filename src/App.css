@@ -1,10 +1,32 @@
-.App {
+.dekstop {
   text-align: center;
 }
 
-.App-logo {
+.desktop-logo {
   height: 40vmin;
   pointer-events: none;
+}
+
+.desktop .rectangle {
+  background-color: #ffb700;
+  border-radius: 20px;
+  filter: blur(60px);
+  height: 485px;
+  left: 0;
+  opacity: 0.08;
+  position: absolute;
+  top: 20px;
+  width: 515px;
+}
+
+.desktop .rectangle-2 {
+  background-color: #ffffff;
+  border-radius: 20px;
+  height: 493px;
+  left: 8px;
+  position: absolute;
+  top: 0;
+  width: 493px;
 }
 
 @media (prefers-reduced-motion: no-preference) {

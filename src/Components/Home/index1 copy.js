@@ -8,7 +8,6 @@ import useImage from 'use-image';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import FontPicker from 'font-picker-react';
-import './style.css'
 
 
 const styles = theme => ({
@@ -125,26 +124,24 @@ const TextObject = ({ activeFontFamily, text, shapeProps, isSelected, onSelect, 
           });
         }}
         onTransformEnd={(e) => {
-          // transformer is changing scale of the node
-          // and NOT its width or height
-          // but in the store we have only width and height
-          // to match the data better we will reset scale on transform end
           const node = shapeRef.current;
           const scaleX = node.scaleX();
           const scaleY = node.scaleY();
-          node.fontSize(node.fontSize() * node.scaleX());
-          console.log(node.fontSize())
 
-          // we will reset it back
+          // Reset scale and adjust fontSize
           node.scaleX(1);
           node.scaleY(1);
+          
+          // Calculate new fontSize based on the scale
+          const newFontSize = node.fontSize() * Math.max(scaleX, scaleY);
+          
           onChange({
             ...shapeProps,
             x: node.x(),
             y: node.y(),
-            // set minimal value
-            width: Math.max(5, node.width() * scaleX),
-            height: Math.max(node.height() * scaleY),
+            width: node.width() * scaleX,
+            height: node.height() * scaleY,
+            fontSize: newFontSize,
           });
         }}
       />
@@ -153,19 +150,20 @@ const TextObject = ({ activeFontFamily, text, shapeProps, isSelected, onSelect, 
           ref={trRef}
           rotationSnaps={[0,90,180,270]}
           boundBoxFunc={(oldBox, newBox) => {
-            // limit resize
+            // Limit resize
             if (newBox.width < 5 || newBox.height < 5) {
               return oldBox;
             }
             return newBox;
           }}
+          keepRatio={false}
         />
       )}
     </React.Fragment>
   );
 };
 
-function Home(props, { display }) {
+function Home1(props, { display }) {
   const { classes } = props;
 
   const dragUrl = React.useRef();
@@ -173,7 +171,9 @@ function Home(props, { display }) {
   const [images, setImages] = React.useState([]);
   const [image, setImage] = React.useState([]);
   const [selectedArray, setSelectedArray] = React.useState(null);
+  const [selectedTextArray, setSelectedTextArray] = React.useState(null);
   const [selectedId, selectShape] = React.useState(null);
+  const [selectedtextId, selectTextShape] = React.useState(null);
   const [text, setText] = React.useState('bois');
   const [activeFontFamily, setActiveFontFamily] = React.useState("Open Sans");
   const [texts, setTexts] = React.useState([]);
@@ -181,12 +181,14 @@ function Home(props, { display }) {
   const [toggledFlip, setToggledFlip] = React.useState(true);
   const toggleImage = () => setToggledFlip(!toggledFlip);
   const [toggledColor, setToggledColor] = useState("");
+  const price = useState(50000);
 
 
   console.log(texts)
   console.log(images)
   console.log(selectedId)
   console.log(imageObj)
+  console.log (typeof price)
 
   const renderPhotos = (source) => {
     console.log("source: ", source);
@@ -244,7 +246,7 @@ function Home(props, { display }) {
     ]);
   };
 
-  const addTextToCanvas = ({ src, x, y, id, scaleX, scaleY, fill }) => {
+  const addTextToCanvas = ({ value, x, y, id, scaleX, scaleY, fill }) => {
     setTexts((currentTexts) => [
       ...currentTexts,
       {
@@ -252,7 +254,7 @@ function Home(props, { display }) {
         y,
         scaleX, 
         scaleY,
-        src,
+        value,
         id,
         fill,
         resetButtonRef: createRef()
@@ -292,10 +294,20 @@ function Home(props, { display }) {
   const checkDeselect = e => {
     // deselect when clicked on empty area
     const clickedOnEmpty = e.target === e.target.getStage();
-    if (clickedOnEmpty) {
+    const clickedOnEmptyText = e.target === e.target.getStage();
+    if (clickedOnEmpty || clickedOnEmptyText) {
       selectShape(null);
+      selectTextShape(null);
     }
   };
+
+  // const checkTextDeselect = e => {
+  //   // deselect when clicked on empty area
+  //   const clickedOnEmpty = e.target === e.target.getStage();
+  //   if (clickedOnEmpty) {
+  //     selectTextShape(null);
+  //   }
+  // };
 
   const [blackTees] = useImage('./assets/tees-color/black-tees.png');
   const [greenTees] = useImage('./assets/tees-color/green-tees.png');
@@ -335,14 +347,14 @@ function Home(props, { display }) {
     })}
   }
   return (
-    <div className="desktop">
+    <div className={classes.content}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Typography variant="h5" component="h3">
             Welcome Home!
           </Typography>
         </Grid>
-        <Grid item xs={6} className="rectangle-2">
+        <Grid item xs={6}>
         <div
             onDrop={e => {
             // register event position
@@ -409,9 +421,11 @@ function Home(props, { display }) {
                     text={text}
                     key={i}
                     shapeProps={textObj}
-                    isSelected={textObj.id === selectedId}
+                    isSelected={textObj.id === selectedtextId}
                     onSelect={() => {
-                      selectShape(textObj.id);
+                      selectTextShape(textObj.id);
+                      setSelectedTextArray(textObj);
+                      console.log(selectedTextArray);
                     }}
                     onChange={(newAttrs) => {
                       const txts = texts.slice();
@@ -427,175 +441,185 @@ function Home(props, { display }) {
         </div>
         </Grid>
         <Grid item xs={6}>
-          <Tabs>
-          <TabList>
-            <Tab>Color</Tab>
-            <Tab>Material</Tab>
-            <Tab>Text</Tab>
-            <Tab>Design</Tab>
-            <Tab>Size and Quantity</Tab>
-          </TabList>
-          <TabPanel>
-            <Grid container>
-              <Grid item style={{border:'1px solid black'}}>
-                  <Grid style={{border:'1px solid black'}}>
-                  <Button onClick={() => setToggledColor(1)} color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/black.png' style={{height: '50px', width: '135px'}}/></Button>
-                  </Grid>
-                  <Grid style={{border:'1px solid black'}}>
-                  <Button onClick={() => setToggledColor(3)} color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/red.png' style={{height: '50px', width: '135px'}}/></Button>
-                  </Grid>
-                  <Grid style={{border:'1px solid black'}}>
-                  <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/yellow.png' style={{height: '50px', width: '135px'}}/></Button>
-                  </Grid>
-                  <Grid style={{border:'1px solid black'}}>
-                  <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/purple.png' style={{height: '50px', width: '135px'}}/></Button>
-                  </Grid>
-              </Grid>  
-              <Grid style={{border:'1px solid black'}}>
-                  <Grid style={{border:'1px solid black'}}>
-                  <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/white.png' style={{height: '50px', width: '135px'}}/></Button>
-                  </Grid>
-                  <Grid style={{border:'1px solid black'}}>
-                  <Button onClick={() => setToggledColor(2)} color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/green.png' style={{height: '50px', width: '135px'}}/></Button>
-                  </Grid>
-                  <Grid style={{border:'1px solid black'}}>
-                  <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/tosca.png' style={{height: '50px', width: '135px'}}/></Button>
-                  </Grid>
-                  <Grid style={{border:'1px solid black'}}>
-                  <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/pink.png' style={{height: '50px', width: '135px'}}/></Button>
-                  </Grid>
-              </Grid>
-              <Grid style={{border:'1px solid black'}}>
-                  <Grid style={{border:'1px solid black'}}>
-                      <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/grey.png' style={{height: '50px', width: '135px'}}/></Button>
-                  </Grid>
-                  <Grid style={{border:'1px solid black'}}>
-                  <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/lime.png' style={{height: '50px', width: '135px'}}/></Button>
-                  </Grid>
-                  <Grid style={{border:'1px solid black'}}>
-                  <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/blue.png' style={{height: '50px', width: '135px'}}/></Button>
-                  </Grid>
-              </Grid>
+        <Tabs>
+      <TabList>
+        <Tab>Color</Tab>
+        <Tab>Material</Tab>
+        <Tab>Text</Tab>
+        <Tab>Design</Tab>
+        <Tab>Size and Quantity</Tab>
+      </TabList>
+  
+        <TabPanel>
+          <Grid container>
+            <Grid item style={{border:'1px solid black'}}>
+                <Grid style={{border:'1px solid black'}}>
+                <Button onClick={() => setToggledColor(1)} color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/black.png' style={{height: '50px', width: '135px'}}/></Button>
+                </Grid>
+                <Grid style={{border:'1px solid black'}}>
+                <Button onClick={() => setToggledColor(3)} color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/red.png' style={{height: '50px', width: '135px'}}/></Button>
+                </Grid>
+                <Grid style={{border:'1px solid black'}}>
+                <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/yellow.png' style={{height: '50px', width: '135px'}}/></Button>
+                </Grid>
+                <Grid style={{border:'1px solid black'}}>
+                <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/purple.png' style={{height: '50px', width: '135px'}}/></Button>
+                </Grid>
+            </Grid>  
+            <Grid style={{border:'1px solid black'}}>
+                <Grid style={{border:'1px solid black'}}>
+                <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/white.png' style={{height: '50px', width: '135px'}}/></Button>
+                </Grid>
+                <Grid style={{border:'1px solid black'}}>
+                <Button onClick={() => setToggledColor(2)} color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/green.png' style={{height: '50px', width: '135px'}}/></Button>
+                </Grid>
+                <Grid style={{border:'1px solid black'}}>
+                <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/tosca.png' style={{height: '50px', width: '135px'}}/></Button>
+                </Grid>
+                <Grid style={{border:'1px solid black'}}>
+                <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/pink.png' style={{height: '50px', width: '135px'}}/></Button>
+                </Grid>
             </Grid>
-          </TabPanel>
-          <TabPanel>
-              <button>30s</button>
-              <button>gildan</button>
-          </TabPanel>
-          <TabPanel>
-              <Button 
-                color="primary"
-                onMouseDown={(e) => {
-                  addTextToCanvas({
-                    scaleX: 1,
-                    scaleY: 1,
-                    id: e.target.id++,
-                    x: 100,
-                    y: Math.random() * 350,
-                    fill: 'black'
-                  });
-                }}
-              >add text</Button><br/>
-              <Button onClick={clearTextsCanvas}>CLEAR ALL TEXTS</Button><br/>
-              {selectedId == null ? (
-                null
-              ):
-              <input type="text" onChange={handleChangeText}/>}<br/>
-              {selectedId == null ? (
-                null
-              ):
-              <FontPicker
-                apiKey="AIzaSyA5JEM2O2zwONPE1hnhL-xb7pNeFGtmRH0"
-                activeFontFamily={activeFontFamily}
-                onChange={(nextFont) =>
-                  setActiveFontFamily(nextFont.family)
-                }
-              />}
-              {selectedId == null ? (
-                null
-              ):
-              <Button>DELETE</Button>}
-              {selectedId == null ? (
-                null
-              ):
-              <Button>FLIP</Button>}
-          </TabPanel>
-          <TabPanel>
-          {/* <img
-            alt="lion"
-            src="http://tiny.cc/txxjsz"
-            width="100px"
-            height="100px"
-            draggable="true"
-            onDragStart={e => {
-              dragUrl.current = e.target.src;
-            }}
-          /> */}
-          {renderPhotos(imageObj)}<br/>
-          <input type="file" multiple onChange={handleChange}/><br/>
-          {selectedId == null ? (
-                null
-              ):
-              <Button onClick={deleteImages}>DELETE</Button>}
-              {selectedId == null ? (
-                null
-              ):
-              <Button onClick={flipImage}>FLIP</Button>}
-              <Button onClick={clearCanvas}>CLEAR</Button>
-          </TabPanel>
-          <TabPanel>
-            <Grid> 
-              <Grid>
-                <form>
-                  <label className='label'>
-                    Small:
-                    <input type="number" name="name" style={{height:'25px', width: '25px', marginLeft:'54px'}}/>
-                  </label><br/><br/>
-                  <label className='label'>
-                    Medium:
-                    <input type="number" name="name" style={{height:'25px', width: '25px', marginLeft:'36px'}}/>
-                  </label><br/><br/>
-                  <label className='label'>
-                    Large:
-                    <input type="number" name="name" style={{height:'25px', width: '25px', marginLeft:'55px'}}/>
-                  </label><br/><br/>
-                  <label className='label'>
-                    Extra Large:
-                    <input type="number" name="name" style={{height:'25px', width: '25px', marginLeft:'15px'}}/>
-                  </label><br/><br/>
-                </form>
-              </Grid>
-              <Grid>
-                <img src='./assets/size-details.png' style={{marginRight:'395px'}}/>
-              </Grid>
+            <Grid style={{border:'1px solid black'}}>
+                <Grid style={{border:'1px solid black'}}>
+                    <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/grey.png' style={{height: '50px', width: '135px'}}/></Button>
+                </Grid>
+                <Grid style={{border:'1px solid black'}}>
+                <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/lime.png' style={{height: '50px', width: '135px'}}/></Button>
+                </Grid>
+                <Grid style={{border:'1px solid black'}}>
+                <Button color="clear" style={{height: '50px', width: '135px'}}><img src='./assets/color/blue.png' style={{height: '50px', width: '135px'}}/></Button>
+                </Grid>
             </Grid>
-          </TabPanel>
-          </Tabs>
+          </Grid>
+        </TabPanel>
+        <TabPanel>
+            <button>30s</button>
+            <button>gildan</button>
+        </TabPanel>
+        <TabPanel>
+            <Button 
+              color="primary"
+              onMouseDown={(e) => {
+                addTextToCanvas({
+                  value: text,
+                  scaleX: 1,
+                  scaleY: 1,
+                  id: e.target.id++,
+                  x: 100,
+                  y: Math.random() * 350,
+                  fill: 'black'
+                });
+              }}
+            >add text</Button><br/>
+            <Button onClick={clearTextsCanvas}>CLEAR ALL TEXTS</Button><br/>
+            {selectedtextId == null ? (
+              null
+            ):
+            <input type="text" onChange={handleChangeText}/>}<br/><br/>
+            {selectedtextId == null ? (
+              null
+            ):
+            <FontPicker
+              apiKey="AIzaSyA5JEM2O2zwONPE1hnhL-xb7pNeFGtmRH0"
+              activeFontFamily={activeFontFamily}
+              onChange={(nextFont) =>
+                setActiveFontFamily(nextFont.family)
+              }
+            />}
+            {selectedtextId == null ? (
+              null
+            ):
+            <Button>DELETE</Button>}
+            {selectedtextId == null ? (
+              null
+            ):
+            <Button>FLIP</Button>}
+        </TabPanel>
+        <TabPanel>
+        {/* <img
+          alt="lion"
+          src="http://tiny.cc/txxjsz"
+          width="100px"
+          height="100px"
+          draggable="true"
+          onDragStart={e => {
+            dragUrl.current = e.target.src;
+          }}
+        /> */}
+        {renderPhotos(imageObj)}<br/>
+        <input type="file" multiple onChange={handleChange}/><br/>
+        {selectedId == null ? (
+              null
+            ):
+            <Button onClick={deleteImages}>DELETE</Button>}
+            {selectedId == null ? (
+              null
+            ):
+            <Button onClick={flipImage}>FLIP</Button>}
+            <Button onClick={clearCanvas}>CLEAR</Button>
+        </TabPanel>
+        <TabPanel>
+          <Grid> 
+            <Grid>
+              <form>
+                <label className='label'>
+                  Small:
+                  <input type="number" name="name" style={{height:'25px', width: '25px', marginLeft:'54px'}}/>
+                </label><br/><br/>
+                <label className='label'>
+                  Medium:
+                  <input type="number" name="name" style={{height:'25px', width: '25px', marginLeft:'36px'}}/>
+                </label><br/><br/>
+                <label className='label'>
+                  Large:
+                  <input type="number" name="name" style={{height:'25px', width: '25px', marginLeft:'55px'}}/>
+                </label><br/><br/>
+                <label className='label'>
+                  Extra Large:
+                  <input type="number" name="name" style={{height:'25px', width: '25px', marginLeft:'15px'}}/>
+                </label><br/><br/>
+              </form>
+            </Grid>
+            <Grid>
+              <img src='./assets/size-details.png' style={{marginRight:'395px'}}/>
+            </Grid>
+          </Grid>
+        </TabPanel>
+      </Tabs>
         </Grid>
         <Grid item xs={3}>
         <Typography variant="h5" component="h3">
           Welcome Home!
-        </Typography>        </Grid>
-        <Grid item xs={3}>
-        <Typography variant="h5" component="h3">
-          Welcome Home!
-        </Typography>        </Grid>
-        <Grid item xs={3}>
-        <Typography variant="h5" component="h3">
-          Welcome Home!
-        </Typography>        </Grid>
+        </Typography>        
+        </Grid>
         <Grid item xs={3}>
         <Typography variant="h5" component="h3">
           Welcome Home!
         </Typography>        
-      </Grid>
+        </Grid>
+        <Grid item xs={3}>
+        <Typography variant="h5" component="h3">
+          Welcome Home!
+        </Typography>        
+        </Grid>
+        <Grid item xs={3}>
+        {/* <Typography variant="h5" component="h3">
+          Welcome Home!
+        </Typography>         */}
+        {/* {images.length > 0 ? ('Rp. ' + price + 40000) : 'Rp. ' + price} */}
+        {images.length > 0 ? (
+              (50000 + 40000)
+            ):
+            price}
+        </Grid>
       </Grid>
     </div>
   );
 }
 
-Home.propTypes = {
+Home1.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Home);
+export default withStyles(styles)(Home1);

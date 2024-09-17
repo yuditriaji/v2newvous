@@ -1,41 +1,26 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import { Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
-const styles = theme => ({
-  root: {
-    ...theme.mixins.gutters(),
-    paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2,
-  },
+const useStyles = makeStyles((theme) => ({
   footer: {
-    backgroundColor: theme.palette.background.paper,
-    marginTop: theme.spacing.unit * 8,
-    padding: `${theme.spacing.unit * 6}px 0`,
-  }
-});
+    marginTop: theme.spacing(4),
+    padding: theme.spacing(2),
+    backgroundColor: '#f5f5f5',
+    textAlign: 'center',
+  },
+}));
 
-function Footer(props) {
-  const { classes } = props;
+function Footer() {
+  const classes = useStyles();
 
   return (
     <footer className={classes.footer}>
-      <Paper className={classes.root} elevation={1}>
-        <Typography variant="h5" component="h3">
-          SRIKANDI PROJECT
-        </Typography>
-        <Typography component="p">
-          @2020 All right reserved
-        </Typography>
-      </Paper>
+      <Typography variant="body2" color="textSecondary">
+        A product of P © 2024 Partoom Textile. All rights reserved
+      </Typography>
     </footer>
   );
 }
 
-Footer.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(Footer);
+export default Footer;

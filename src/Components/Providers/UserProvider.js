@@ -1,10 +1,10 @@
 import React, { Component, createContext, useEffect } from "react";
-import { auth, generateUserDocument } from "../firebase/config";
+// import { auth, generateUserDocument } from "../firebase/config";
 
-export const UserContext = createContext({ user: null });
+export const UserContext = createContext({ user: "" });
 
 const UserProvider = (props) => {
-  const [user, setUser] = React.useState(null);
+  const [user, setUser] = React.useState("");
 
   React.useEffect(() => {
     // getLinks();
@@ -13,8 +13,8 @@ const UserProvider = (props) => {
   }, []);
 
   function userAuthState(){
-    const response = await fetch('http://localhost:9000/api/login', {
-      method: 'POST',
+    const response = fetch('http://localhost:9000/api/userState', {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       }

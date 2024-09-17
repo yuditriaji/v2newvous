@@ -1,0 +1,299 @@
+.desktop {
+  background-color: #fffaf3;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+}
+
+.desktop .div-2 {
+  background-color: #fffaf3;
+  height: 1024px;
+  position: relative;
+  width: 1440px;
+}
+
+.desktop .overlap {
+  height: 493px;
+  left: 126px;
+  position: absolute;
+  top: 233px;
+  width: 1121px;
+}
+
+.desktop .component-2 {
+  height: 493px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 1121px;
+}
+
+.desktop .overlap-group {
+  height: 505px;
+  left: -8px;
+  position: absolute;
+  top: 0;
+  width: 515px;
+}
+
+.desktop .rectangle {
+  background-color: #ffb700;
+  border-radius: 20px;
+  filter: blur(60px);
+  height: 485px;
+  left: 0;
+  opacity: 0.08;
+  position: absolute;
+  top: 20px;
+  width: 515px;
+}
+
+.desktop .rectangle-2 {
+  background-color: #ffffff;
+  border-radius: 20px;
+  height: 493px;
+  left: 8px;
+  position: absolute;
+  top: 0;
+  width: 493px;
+}
+
+.desktop .element {
+  height: 298px;
+  left: 108px;
+  object-fit: cover;
+  position: absolute;
+  top: 86px;
+  width: 293px;
+}
+
+.desktop .overlap-group-2 {
+  height: 454px;
+  left: 534px;
+  position: absolute;
+  top: 51px;
+  width: 595px;
+}
+
+.desktop .rectangle-3 {
+  background-color: #ffb700;
+  border-radius: 20px;
+  filter: blur(60px);
+  height: 434px;
+  left: 0;
+  opacity: 0.08;
+  position: absolute;
+  top: 20px;
+  width: 595px;
+}
+
+.desktop .rectangle-4 {
+  background-color: #ffffff;
+  border-radius: 20px;
+  height: 442px;
+  left: 5px;
+  position: absolute;
+  top: 0;
+  width: 582px;
+}
+
+.desktop .text-wrapper-4 {
+  color: #ff9800;
+  font-family: "Poppins-SemiBold", Helvetica;
+  font-size: 18px;
+  font-weight: 600;
+  left: 521px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 390px;
+}
+
+.desktop .text-wrapper-5 {
+  color: #b7b7b7;
+  font-family: "Poppins-SemiBold", Helvetica;
+  font-size: 18px;
+  font-weight: 600;
+  left: 29px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 390px;
+}
+
+.desktop .text-wrapper-6 {
+  color: #ff9800;
+  font-family: "Poppins-SemiBold", Helvetica;
+  font-size: 18px;
+  font-weight: 600;
+  left: 539px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: -1px;
+}
+
+.desktop .text-wrapper-7 {
+  color: #b7b7b7;
+  font-family: "Poppins-SemiBold", Helvetica;
+  font-size: 18px;
+  font-weight: 600;
+  left: 625px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: -1px;
+}
+
+.desktop .text-wrapper-8 {
+  color: #b7b7b7;
+  font-family: "Poppins-SemiBold", Helvetica;
+  font-size: 18px;
+  font-weight: 600;
+  left: 737px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: -1px;
+}
+
+.desktop .text-wrapper-9 {
+  color: #b7b7b7;
+  font-family: "Poppins-SemiBold", Helvetica;
+  font-size: 18px;
+  font-weight: 600;
+  left: 812px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: -1px;
+}
+
+.desktop .text-wrapper-10 {
+  color: #b7b7b7;
+  font-family: "Poppins-SemiBold", Helvetica;
+  font-size: 18px;
+  font-weight: 600;
+  left: 911px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: -1px;
+}
+
+.desktop .component-1 {
+  left: 563px !important;
+  position: absolute !important;
+  top: 93px !important;
+}
+
+.desktop .component-instance {
+  background-color: #ff0000 !important;
+}
+
+.desktop .component-1-instance {
+  left: 563px !important;
+  position: absolute !important;
+  top: 165px !important;
+}
+
+.desktop .design-component-instance-node {
+  left: 563px !important;
+  position: absolute !important;
+  top: 237px !important;
+}
+
+.desktop .component-3 {
+  background-color: #ffb700 !important;
+}
+
+.desktop .component-4 {
+  left: 563px !important;
+  position: absolute !important;
+  top: 309px !important;
+}
+
+.desktop .component-5 {
+  background-color: #f5f5f5 !important;
+}
+
+.desktop .component-6 {
+  left: 745px !important;
+  position: absolute !important;
+  top: 93px !important;
+}
+
+.desktop .component-7 {
+  background-color: #a6d421 !important;
+}
+
+.desktop .component-8 {
+  left: 745px !important;
+  position: absolute !important;
+  top: 165px !important;
+}
+
+.desktop .component-9 {
+  background-color: #15e49a !important;
+}
+
+.desktop .component-10 {
+  left: 745px !important;
+  position: absolute !important;
+  top: 237px !important;
+}
+
+.desktop .component-11 {
+  background-color: #1adfd3 !important;
+}
+
+.desktop .component-12 {
+  left: 745px !important;
+  position: absolute !important;
+  top: 309px !important;
+}
+
+.desktop .component-13 {
+  background-color: #7d7d7d !important;
+}
+
+.desktop .component-14 {
+  left: 927px !important;
+  position: absolute !important;
+  top: 93px !important;
+}
+
+.desktop .component-15 {
+  background-color: #216cc5 !important;
+}
+
+.desktop .component-16 {
+  left: 927px !important;
+  position: absolute !important;
+  top: 165px !important;
+}
+
+.desktop .component-17 {
+  background-color: #ae2eea !important;
+}
+
+.desktop .component-18 {
+  left: 927px !important;
+  position: absolute !important;
+  top: 237px !important;
+}
+
+.desktop .component-19 {
+  background-color: #ee4ec1 !important;
+}
+
+.desktop .component-13-instance {
+  left: 0 !important;
+  position: absolute !important;
+  top: 0 !important;
+}
+
+.desktop .component-20 {
+  color: #ff9800 !important;
+}

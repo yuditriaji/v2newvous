@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,7 +12,13 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import {  } from 'react-router-dom';
+import Home from '../Home/index1';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import SignUp from '../SignUp/SignUp';
+import SignIn from './Signin';
 import { Redirect } from 'react-router-dom';
+
 
 function Copyright() {
   return (
@@ -50,14 +56,19 @@ const useStyles = makeStyles((theme) => ({
 export default function LoginSrc() {
   const classes = useStyles();
 
+  // const navigate = useNavigate();
+  // const redirect = Redirect();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [postResponse, setPostResponse] = React.useState("");
-  const [authorized, setAuthorized] = React.useState(true);
+  const [authorized, setAuthorized] = useState(false);
+  const [busy, setBusy] = React.useState(false);
+  // const [redirect, setRedirect] = React.useState(false);
   let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 
   const authenticateUser = async (event, email, password) => {
+    setBusy(true);
     event.preventDefault();
     const response = await fetch('http://localhost:9000/api/login', {
       method: 'POST',
@@ -69,21 +80,22 @@ export default function LoginSrc() {
     .then(response => response.json())
     .then(response => setPostResponse(response.body));
 
-    console.log(typeof postResponse)
-    console.log(postResponse)
-    if(re.test(postResponse)) {
-      console.log("email cocok")
+    if(re.test(postResponse.email)){
+      setAuthorized(true);
+      console.log(authorized)
+      // setRedirect(true);
+      console.log("cocok")
+      console.log(typeof postResponse)
+      console.log(postResponse)
+  
+      console.log(response);
+  
+      console.log(authorized)
+      return Redirect("/signin");
     }
-
-    console.log(response);
-
-    // console.log(authorized)
 
   };
 
-  // if(!authorized){
-  //   return <Redirect to="/login" />
-  // }
 
   const onChangeHandler = (event) => {
     const {name, value} = event.currentTarget;
@@ -166,6 +178,11 @@ export default function LoginSrc() {
       <Box mt={8}>
         <Copyright />
       </Box>
+      {/* <BrowserRouter>
+          <Switch>
+            <Route exact path="/" element={authorized ? <Home/> : <SignUp />}/>
+          </Switch>
+      </BrowserRouter> */}
     </Container>
   );
 }
