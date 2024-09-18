@@ -1,9 +1,9 @@
 {
-  "short_name": "Tesain",
+  "short_name": "Partoom",
   "name": "Create React App Sample",
   "icons": [
     {
-      "src": "Tico.ico",
+      "src": "pavicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
