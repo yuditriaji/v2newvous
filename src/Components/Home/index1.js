@@ -15,6 +15,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import FontDownloadIcon from '@material-ui/icons/FontDownload';
 import TextField from '@material-ui/core/TextField';
 
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -118,6 +119,31 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       backgroundColor: 'rgba(0, 0, 0, 0.04)',
     },
+  },
+  sizeSelectorContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    marginBottom: theme.spacing(2),
+  },
+  sizeSelectorLabel: {
+    marginBottom: theme.spacing(1),
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    color: theme.palette.text.primary,
+  },
+  sizeSelector: {
+    padding: theme.spacing(1),
+    fontSize: '1rem',
+    borderRadius: theme.shape.borderRadius,
+    border: `1px solid ${theme.palette.grey[400]}`,
+    '&:focus': {
+      borderColor: theme.palette.primary.main,
+      outline: 'none',
+    },
+  },
+  sizeOption: {
+    padding: theme.spacing(1),
   },
 }));
 
@@ -266,14 +292,16 @@ function TShirtCustomizer() {
                       setActiveFontFamily={setActiveFontFamily} 
                       activeFontFamily={activeFontFamily} 
                     />
-                    <Button 
-                      variant="contained" 
-                      color="secondary" 
-                      onClick={clearTexts}
-                      style={{ marginTop: '10px' }}
-                    >
-                      Clear Texts
-                    </Button>
+                    {texts.length > 0 && (
+                      <Button 
+                        variant="contained" 
+                        color="secondary" 
+                        onClick={clearTexts}
+                        style={{ marginTop: '10px' }}
+                      >
+                        Clear Texts
+                      </Button>
+                    )}
                   </>
                 )}
                 {tabValue === 3 && (
@@ -283,14 +311,16 @@ function TShirtCustomizer() {
                       imageObj={imageObj} 
                       addStickerToPanel={addStickerToPanel}
                     />
-                    <Button 
-                      variant="contained" 
-                      color="secondary" 
-                      onClick={clearImages}
-                      style={{ marginTop: '10px' }}
-                    >
-                      Clear Images
-                    </Button>
+                    {images.length > 0 && (
+                      <Button 
+                        variant="contained" 
+                        color="secondary" 
+                        onClick={clearImages}
+                        style={{ marginTop: '10px' }}
+                      >
+                        Clear Images
+                      </Button>
+                    )}
                   </>
                 )}
                 {tabValue === 4 && <SizeSelector />}
@@ -461,12 +491,22 @@ const URLImage = ({ image, isSelected, onSelect, onChange }) => {
       {isSelected && (
         <Transformer
           ref={trRef}
+          rotateEnabled={true}
+          anchorStroke="red"
+          anchorFill="red"
+          borderStroke="red"
+          anchorSize={7}
+          anchorCornerRadius={5}
+          rotateAnchorOffset={30}
+          enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
           boundBoxFunc={(oldBox, newBox) => {
             if (newBox.width < 5 || newBox.height < 5) {
               return oldBox;
             }
             return newBox;
           }}
+          rotationSnaps={[0, 90, 180, 270]}
+          borderStrokeWidth={0.5} // Reduced line weight
         />
       )}
     </>
@@ -586,8 +626,8 @@ function ColorSelector({ setToggledColor }) {
                 src="./assets/color/ion_shirt-sharp.png"
                 alt={`${color.name} shirt`}
                 style={{ 
-                  width: '60%',
-                  height: '60%',
+                  width: '35%',
+                  height: '35%',
                   objectFit: 'contain',
                   filter: color.name === 'White' ? 'invert(1)' : 'none',
                 }} 
@@ -689,8 +729,53 @@ function TextAdder({ addTextToCanvas, handleChangeText, text, setActiveFontFamil
 }
 
 function SizeSelector() {
-  // Implement size selection UI
-  return <div>Size Selector</div>;
+  const classes = useStyles();
+  const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
+  const sizeChart = {
+    S: { chest: 90, length: 65 },
+    M: { chest: 95, length: 67 },
+    L: { chest: 100, length: 70 },
+    XL: { chest: 110, length: 73 },
+    XXL: { chest: 120, length: 75 },
+  };
+
+  const [selectedSize, setSelectedSize] = useState(sizes[0]);
+  const [quantity, setQuantity] = useState(1);
+
+  const handleSizeChange = (event) => {
+    setSelectedSize(event.target.value);
+  };
+
+  const incrementQuantity = () => {
+    setQuantity(prevQuantity => prevQuantity + 1);
+  };
+
+  const decrementQuantity = () => {
+    setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
+  };
+
+  return (
+    <div className={classes.sizeSelectorContainer}>
+      <label htmlFor="size-selector" className={classes.sizeSelectorLabel}>Select Size:</label>
+      <select id="size-selector" className={classes.sizeSelector} onChange={handleSizeChange}>
+        {sizes.map((size) => (
+          <option key={size} value={size} className={classes.sizeOption}>
+            {size}
+          </option>
+        ))}
+      </select>
+      <div className={classes.sizeChart}>
+        <h4>Size Chart (cm)</h4>
+        <p>Chest: {sizeChart[selectedSize].chest} cm</p>
+        <p>Length: {sizeChart[selectedSize].length} cm</p>
+      </div>
+      <div className={classes.quantitySelector}>
+        <Button onClick={decrementQuantity} style={{ border: 'none' }}>-</Button>
+        <span>{quantity}</span>
+        <Button onClick={incrementQuantity} style={{ border: 'none' }}>+</Button>
+      </div>
+    </div>
+  );
 }
 
 export default TShirtCustomizer;

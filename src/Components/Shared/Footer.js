@@ -17,7 +17,7 @@ function Footer() {
   return (
     <footer className={classes.footer}>
       <Typography variant="body2" color="textSecondary">
-        A product of P © 2024 Partoom Textile. All rights reserved
+        A product of P © 2024 Partoom Garments. All rights reserved
       </Typography>
     </footer>
   );
