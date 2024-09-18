@@ -1,6 +1,6 @@
 {
   "short_name": "Partoom",
-  "name": "Create React App Sample",
+  "name": "Partoom Garment",
   "icons": [
     {
       "src": "pavicon.ico",
@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "Tico192.png",
+      "src": "partoom192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "Tico512.png",
+      "src": "partoom512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
