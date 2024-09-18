@@ -11,6 +11,9 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import AddIcon from '@material-ui/icons/Add';
 import Header from '../Shared/Header';
 import Footer from '../Shared/Footer';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import FontDownloadIcon from '@material-ui/icons/FontDownload';
+import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -241,6 +244,21 @@ function TShirtCustomizer() {
                 {tabValue === 1 && <MaterialSelector />}
                 {tabValue === 2 && (
                   <>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      label="Enter your text"
+                      value={text}
+                      onChange={handleChangeText}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <FontDownloadIcon />
+                          </InputAdornment>
+                        ),
+                      }}
+                      style={{ marginTop: '10px' }}
+                    />
                     <TextAdder 
                       addTextToCanvas={addTextToCanvas} 
                       handleChangeText={handleChangeText} 
@@ -296,9 +314,8 @@ function TShirtCanvas({ images, texts, selectedId, selectedtextId, activeFontFam
   const [image] = useImage('https://d3vvxc53hv5hl7.cloudfront.net/unisex_tees/product_template_hanes_tagless_tee_front.png');
   const [color, setColor] = useState('#ffffff'); // Default white
 
-  // Define stage dimensions
-  const stageWidth = 500; // Set this to your desired width
-  const stageHeight = 600; // Set this to your desired height
+  const containerRef = useRef(null);
+  const [stageSize, setStageSize] = useState({ width: 500, height: 600 });
 
   useEffect(() => {
     if (toggledColor !== "") {
@@ -306,13 +323,29 @@ function TShirtCanvas({ images, texts, selectedId, selectedtextId, activeFontFam
     }
   }, [toggledColor]);
 
+  useEffect(() => {
+    const updateStageSize = () => {
+      if (containerRef.current) {
+        const { offsetWidth, offsetHeight } = containerRef.current;
+        setStageSize({ width: offsetWidth, height: offsetHeight });
+      }
+    };
+
+    updateStageSize();
+    window.addEventListener('resize', updateStageSize);
+
+    return () => {
+      window.removeEventListener('resize', updateStageSize);
+    };
+  }, []);
+
   const getColorFromIndex = (index) => {
     const colors = ['#000000', '#4CAF50', '#2196F3', '#F44336', '#CDDC39', '#9C27B0', '#FFEB3B', '#009688', '#E91E63', '#FFFFFF', '#9E9E9E'];
     return colors[index] || '#ffffff';
   };
 
   return (
-    <div style={{ position: 'relative', width: stageWidth, height: stageHeight }}>
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div
         style={{
           position: 'absolute',
@@ -332,21 +365,15 @@ function TShirtCanvas({ images, texts, selectedId, selectedtextId, activeFontFam
           width: '100%',
           height: '100%',
           backgroundImage: `url(https://d3vvxc53hv5hl7.cloudfront.net/unisex_tees/product_template_hanes_tagless_tee_front.png)`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center bottom',
-          maskImage: `url(https://d3vvxc53hv5hl7.cloudfront.net/unisex_tees/product_template_hanes_tagless_tee_front.png)`,
-          maskSize: 'cover',
-          WebkitMaskImage: `url(https://d3vvxc53hv5hl7.cloudfront.net/unisex_tees/product_template_hanes_tagless_tee_front.png)`,
-          WebkitMaskSize: 'cover',
-          maskPosition: 'center bottom',
-          WebkitMaskPosition: 'center bottom',
-          maskRepeat: 'no-repeat',
-          WebkitMaskRepeat: 'no-repeat',
+          backgroundSize: 'contain', // Changed from 'cover' to 'contain'
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat', // Ensure the t-shirt image does not repeat vertically
+          opacity: 1, // Adjust opacity to make the image more realistic
         }}
       />
       <Stage 
-        width={stageWidth}
-        height={stageHeight}
+        width={stageSize.width}
+        height={stageSize.height}
         ref={stageRef}
         onMouseDown={checkDeselect}
         onTouchStart={checkDeselect}
@@ -631,12 +658,12 @@ function TextAdder({ addTextToCanvas, handleChangeText, text, setActiveFontFamil
 
   return (
     <div className={classes.root}>
-      <input
+      {/* <input
         type="text"
         value={text}
         onChange={handleChangeText}
         placeholder="Enter text"
-      />
+      /> */}
       <Button
         fullWidth
         variant="outlined"
@@ -653,7 +680,7 @@ function TextAdder({ addTextToCanvas, handleChangeText, text, setActiveFontFamil
         Add Text to Canvas
       </Button>
       <FontPicker
-        apiKey="YOUR_GOOGLE_FONTS_API_KEY"
+        apiKey="AIzaSyA5JEM2O2zwONPE1hnhL-xb7pNeFGtmRH0"
         activeFontFamily={activeFontFamily}
         onChange={(nextFont) => setActiveFontFamily(nextFont.family)}
       />
